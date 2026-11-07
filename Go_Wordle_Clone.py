@@ -1,17 +1,28 @@
 # Worlde Clone
 
 import random ## Random Module for getting a random word from list
+import string ## Module for ASCII letters (English Alphabet)
 
-
-testwords = ['ratio', 'space', 'coral', 'exact']
+testwords = ['RATIO', 'SPACE', 'CORAL', 'EXACT']
 guess = None ## Initial Value
+attempts = 0
+max_attempts = 6
 
-randomword = random.choice(testwords)
+randomword = random.choice(testwords).lower()
 
-while guess != randomword:
-    try: ## Check for value (int or str)
-        guess = str(input('Type a 5-letter word: '))
-        if len(guess) != 5:
-            print('Error: The word has to be 5 letters only.')
-    except ValueError:
-        print('The input has to be a word')
+while guess != randomword and attempts < max_attempts:
+    guess = input(f'Attempt {attempts + 1}/{max_attempts} - Type a 5-letter word: ').lower()
+    if not all(char in string.ascii_lowercase for char in guess): ## Check if every character is a valid English letter (a-z)
+        print('Error: The word must only contain standard English letters.')
+    elif len(guess) != 5:
+        print('Error: The word has to be 5 letters only.')
+    elif guess not in [word.lower() for word in testwords]:
+        print('Error: The word is not in the list.')
+    else:
+        attempts += 1
+
+
+if guess == randomword.lower():
+    print(f'You got the correct word in {attempts} guesses.')
+else:
+    print(f'You ran out of guesses. The word was {randomword}.')
