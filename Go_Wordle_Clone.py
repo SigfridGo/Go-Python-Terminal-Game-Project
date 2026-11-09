@@ -8,6 +8,12 @@ guess = None ## Initial Value
 attempts = 0
 max_attempts = 6
 
+## Colored Boxes using ANSI codes (no module needed)
+green = '\033[42m\033[30m' # Correct letter - right position
+yellow = '\033[43m\033[30m' # Correct letter - wrong position
+gray = '\033[47m\033[30m' # Wrong letter
+blank = '\033[0m' # reset terminal colors
+
 randomword = random.choice(testwords).lower()
 
 while guess != randomword and attempts < max_attempts:
@@ -20,6 +26,8 @@ while guess != randomword and attempts < max_attempts:
         print('Error: The word is not in the list.')
     else:
         attempts += 1
+
+## logic for colored boxes somewhere here
 
 
 if guess == randomword.lower():
