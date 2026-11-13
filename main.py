@@ -2,8 +2,14 @@
 
 import random ## Random Module for getting a random word from list
 import string ## Module for ASCII letters (English Alphabet)
+import nltk   ## English dictionary module 
 
-testwords = ['RATIO', 'SPACE', 'CORAL', 'EXACT', 'APPLE', 'JAZZY', 'PAPER', 'CHAIR']
+## Downloads the dataset into the pc
+nltk.download('words')
+from nltk.corpus import words
+
+## Extracting only the 5-letter words
+word_list = [w.lower() for w in words.words() if len(w) == 5 and w.isalpha()]
 
 ## Colored Boxes using ANSI codes (no module import needed)
 green_box = '\033[42m\033[30m'                    # Correct letter - right position
@@ -15,7 +21,7 @@ while True:
     guess = None       ## Initial Value
     attempts = 0
     max_attempts = 6
-    randomword = random.choice(testwords).lower()
+    randomword = random.choice(word_list).lower()
 
     while guess != randomword and attempts < max_attempts:
         guess = input(f'Attempt {attempts + 1}/{max_attempts} - Type a 5-letter word: ').lower()
@@ -25,7 +31,7 @@ while True:
         elif len(guess) != 5:
             print('Error: The word has to be 5 letters only.')
             continue
-        elif guess not in [word.lower() for word in testwords]:
+        elif guess not in word_list:
             print('Error: The word is not in the list.')
             continue
         else:
@@ -48,7 +54,7 @@ while True:
     if guess == randomword.lower():
         print(f'You got the correct word in {attempts} guesses.')
     else:
-        print(f'You ran out of guesses. The word was {randomword.upper}.')
+        print(f'You ran out of guesses. The word was {randomword.upper()}.')
 
     play_again = input('\nDo you want to play again? (y/n): ').strip().lower()
     if play_again != 'y':
