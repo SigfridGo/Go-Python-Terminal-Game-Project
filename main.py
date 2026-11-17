@@ -23,6 +23,10 @@ while True:
     max_attempts = 6
     randomword = random.choice(word_list).lower()
 
+    # Replicating the list of letters in wordle 
+    # Dictionary for letters to be joined later
+    letters_list = {char: f' {char.upper()} ' for char in string.ascii_lowercase}
+
     while guess != randomword and attempts < max_attempts:
         guess = input(f'Attempt {attempts + 1}/{max_attempts} - Type a 5-letter word: ').lower()
         if not all(char in string.ascii_lowercase for char in guess):       # Check if every character is a valid English letter (a-z)
