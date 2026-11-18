@@ -28,6 +28,11 @@ while True:
     letters_list = {char: f' {char.upper()} ' for char in string.ascii_lowercase}
 
     while guess != randomword and attempts < max_attempts:
+        ## Replicating the virtual keyboard from Wordle
+        print(' ' + ''.join(letters_list[c] for c in 'qwertyuiop'))
+        print('  ' + ''.join(letters_list[c] for c in 'asdfghjkl'))
+        print('    ' + ''.join(letters_list[c] for c in 'zxcvbnm') + '\n')
+
         guess = input(f'Attempt {attempts + 1}/{max_attempts} - Type a 5-letter word: ').lower()
         if not all(char in string.ascii_lowercase for char in guess):       # Check if every character is a valid English letter (a-z)
             print('Error: The word must only contain standard English letters.')
@@ -46,13 +51,21 @@ while True:
         guess_upper = guess.upper()             # upper to match list of testwords
         randomword_upper = randomword.upper()
 
-        for i in range(5):      # added multiple boxes for visual clarity
+        for i in range(5):      # added extra spaces to widen boxes 
             if guess_upper[i] == randomword_upper[i]:
                 answer.append(f'{green_box}  {guess_upper[i]}   {blank_box}')
+                # Adds green box to list of letters
+                letters_list[guess[i]] = f'{green_box} {guess_upper[i]} {blank_box}'
             elif guess_upper [i] in randomword_upper:
                 answer.append(f'{yellow_box}  {guess_upper[i]}   {blank_box}')
+                # Updating letters to yellow if correct but wrong placement
+                if green_box not in letters_list[guess[i]]:
+                    letters_list[guess[i]] = f'{yellow_box} {guess_upper[i]} {blank_box}'
             else:
                 answer.append(f'{gray_box}  {guess_upper[i]}   {blank_box}')
+                # Places letters in gray box
+                if green_box not in letters_list[guess[i]] and yellow_box not in letters_list[guess[i]]:
+                    letters_list[guess[i]] = f'{gray_box} {guess_upper[i]} {blank_box}'
         print(f'  '.join(answer))
 
     if guess == randomword.lower():
