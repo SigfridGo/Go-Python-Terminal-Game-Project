@@ -8,7 +8,7 @@ import nltk   ## English dictionary module
 nltk.download('words')
 from nltk.corpus import words
 
-## Extracting only the 5-letter words
+## Extracting only the 5-letter words 
 word_list = [w.lower() for w in words.words() if len(w) == 5 and w.isalpha()]
 
 ## Colored Boxes using ANSI codes (no module import needed)
@@ -16,6 +16,7 @@ green_box = '\033[42m\033[30m'                    # Correct letter - right posit
 yellow_box = '\033[43m\033[30m'                   # Correct letter - wrong position
 gray_box = '\033[48;2;120;124;126m\033[30m'       # Wrong letter
 blank_box = '\033[0m'                             # reset terminal colors
+red_text = '\033[31m'
 
 while True:
     guess = None       ## Initial Value
@@ -35,13 +36,13 @@ while True:
 
         guess = input(f'Attempt {attempts + 1}/{max_attempts} - Type a 5-letter word: ').lower()
         if not all(char in string.ascii_lowercase for char in guess):       # Check if every character is a valid English letter (a-z)
-            print('Error: The word must only contain standard English letters.')
+            print(f'{red_text}Error: The word must only contain standard English letters.{blank_box}')
             continue
         elif len(guess) != 5:
-            print('Error: The word has to be 5 letters only.')
+            print(f'{red_text}Error: The word has to be 5 letters only.{blank_box}')
             continue
         elif guess not in word_list:
-            print('Error: The word is not in the list.')
+            print(f'{red_text}Error: The word is not in the list.{blank_box}')
             continue
         else:
             attempts += 1
