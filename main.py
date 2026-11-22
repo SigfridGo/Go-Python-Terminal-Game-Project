@@ -8,7 +8,7 @@ import nltk   ## English dictionary module
 nltk.download('words')
 from nltk.corpus import words
 
-## Extracting only the 5-letter words 
+## Extracting only the 5-letter words from the english module
 word_list = [w.lower() for w in words.words() if len(w) == 5 and w.isalpha()]
 
 ## Colored Boxes using ANSI codes (no module import needed)
@@ -48,25 +48,40 @@ while True:
             attempts += 1
 
         ## Applying colored boxes to each letter and appending & joining to a list
-        answer = []
-        guess_upper = guess.upper()             # upper to match list of testwords
+        answer = [None] * 5              ## pre-allocating answer to count each letters' apperance in randomword_upper
+        guess_upper = guess.upper()      # upper to match list of testwords
         randomword_upper = randomword.upper()
 
-        for i in range(5):      # added extra spaces to widen boxes 
-            if guess_upper[i] == randomword_upper[i]:
-                answer.append(f'{green_box}  {guess_upper[i]}   {blank_box}')
-                # Adds green box to list of letters
-                letters_list[guess[i]] = f'{green_box} {guess_upper[i]} {blank_box}'
-            elif guess_upper [i] in randomword_upper:
-                answer.append(f'{yellow_box}  {guess_upper[i]}   {blank_box}')
-                # Updating letters to yellow if correct but wrong placement
+        mismatch_count = {}
+        for ch in randomword_upper:
+            mismatch_count[ch] = mismatch_count.get(ch, 0) + 1 
+
+        ## 1st Pass: Letters matching exact index
+        ## Counts the number of correct letter placements for the guess
+        ## Decrements count for checking yellow/gray box placements on next pass
+        for i in range(5):
+            ch = guess_upper[i]
+            if ch == randomword_upper[i]:
+                answer[i] = f'{green_box}  {ch}   {blank_box}'
+                letters_list[guess[i]] = f'{green_box} {ch} {blank_box}'
+                mismatch_count[ch] -= 1
+
+        ## 2nd Pass: Yellow and gray boxes
+        ## Checks each index if they have green box from 1st pass, skips to next index if true
+        ## If mismatch_count > 0, a letter that repeats is somewhere else as well, a yellow box is then placed
+        for i in range(5):
+            if answer[i] is not None:
+                continue
+            ch = guess_upper[i]
+            if mismatch_count.get(ch, 0) > 0:
+                answer[i] = f'{yellow_box}  {ch}   {blank_box}'
+                mismatch_count[ch] -= 1     ## Decrements so that it doesn't count more than what is repeated
                 if green_box not in letters_list[guess[i]]:
-                    letters_list[guess[i]] = f'{yellow_box} {guess_upper[i]} {blank_box}'
+                    letters_list[guess[i]] = f'{yellow_box} {ch} {blank_box}'
             else:
-                answer.append(f'{gray_box}  {guess_upper[i]}   {blank_box}')
-                # Places letters in gray box
+                answer[i] = f'{gray_box}  {ch}   {blank_box}'
                 if green_box not in letters_list[guess[i]] and yellow_box not in letters_list[guess[i]]:
-                    letters_list[guess[i]] = f'{gray_box} {guess_upper[i]} {blank_box}'
+                    letters_list[guess[i]] = f'{gray_box} {ch} {blank_box}'
         print(f'  '.join(answer))
 
     if guess == randomword.lower():
