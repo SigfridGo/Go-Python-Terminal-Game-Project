@@ -8,32 +8,44 @@ import nltk   ## English dictionary module
 nltk.download('words')
 from nltk.corpus import words
 
-## Extracting only the 5-letter words from the english module
+## Extracting only the 5-letter words from the english module (and lower case)
 word_list = [w.lower() for w in words.words() if len(w) == 5 and w.isalpha()]
 
 ## Colored Boxes using ANSI codes (no module import needed)
 green_box = '\033[42m\033[30m'                    # Correct letter - right position
 yellow_box = '\033[43m\033[30m'                   # Correct letter - wrong position
 gray_box = '\033[48;2;120;124;126m\033[30m'       # Wrong letter
-blank_box = '\033[0m'                             # reset terminal colors
+blank_box = '\033[0m'                             # Reset terminal colors
 red_text = '\033[31m'
+empty_tile = f'{blank_box}[    ]{blank_box}'       # For the 6x5 grid similar to Wordle
+
+def wordle_board(board):
+    for row in board:
+        print('  '.join(row))
+    print()
+    print()
 
 while True:
     guess = None       ## Initial Value
     attempts = 0
     max_attempts = 6
     randomword = random.choice(word_list).lower()
+    board = [[empty_tile for i in range(5)] for i in range(max_attempts)]
 
     # Replicating the list of letters in wordle 
     # Dictionary for letters to be joined later
     letters_list = {char: f' {char.upper()} ' for char in string.ascii_lowercase}
 
     while guess != randomword and attempts < max_attempts:
+        ## Prints the board
+        wordle_board(board)
+
         ## Replicating the virtual keyboard from Wordle
         print(' ' + ''.join(letters_list[c] for c in 'qwertyuiop'))
         print('  ' + ''.join(letters_list[c] for c in 'asdfghjkl'))
         print('    ' + ''.join(letters_list[c] for c in 'zxcvbnm') + '\n')
 
+        ## Checks for invalid inputs
         guess = input(f'Attempt {attempts + 1}/{max_attempts} - Type a 5-letter word: ').lower()
         if not all(char in string.ascii_lowercase for char in guess):       # Check if every character is a valid English letter (a-z)
             print(f'{red_text}Error: The word must only contain standard English letters.{blank_box}')
@@ -48,13 +60,13 @@ while True:
             attempts += 1
 
         ## Applying colored boxes to each letter and appending & joining to a list
-        answer = [None] * 5              ## pre-allocating answer to count each letters' apperance in randomword_upper
+        answer = [None] * 5              ## pre-allocating answer indexes to compare and count each letters' apperance in randomword_upper
         guess_upper = guess.upper()      # upper to match list of testwords
         randomword_upper = randomword.upper()
 
-        mismatch_count = {}
+        mismatch_count = {}         # counts each character index for repeating letters, adds count to check for mismatch on pass 1 and 2
         for ch in randomword_upper:
-            mismatch_count[ch] = mismatch_count.get(ch, 0) + 1 
+            mismatch_count[ch] = mismatch_count.get(ch, 0) + 1
 
         ## 1st Pass: Letters matching exact index
         ## Counts the number of correct letter placements for the guess
@@ -82,7 +94,10 @@ while True:
                 answer[i] = f'{gray_box}  {ch}   {blank_box}'
                 if green_box not in letters_list[guess[i]] and yellow_box not in letters_list[guess[i]]:
                     letters_list[guess[i]] = f'{gray_box} {ch} {blank_box}'
-        print(f'  '.join(answer))
+
+        ## Replaced print(f'  '.join(answer)) since board = answer already prints the attempted answer
+        board[attempts - 1] = answer
+    wordle_board(board)
 
     if guess == randomword.lower():
         print(f'You got the correct word in {attempts} guesses.')
