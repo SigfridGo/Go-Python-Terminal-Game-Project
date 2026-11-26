@@ -17,7 +17,7 @@ yellow_box = '\033[43m\033[30m'                   # Correct letter - wrong posit
 gray_box = '\033[48;2;120;124;126m\033[30m'       # Wrong letter
 blank_box = '\033[0m'                             # Reset terminal colors
 red_text = '\033[31m'
-empty_tile = f'{blank_box}[    ]{blank_box}'       # For the 6x5 grid similar to Wordle
+empty_tile = f'\033[48;2;32;34;37m\033[38;2;90;94;98m  ·   \033[0m'       # For the 6x5 grid similar to Wordle
 
 def wordle_board(board):
     for row in board:
